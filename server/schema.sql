@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS alerts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_jobrun_id ON alerts (jobrun_id);
-CREATE INDEX IF NOT EXISTS idx_order ON alerts (order);
+CREATE INDEX IF NOT EXISTS idx_line ON alerts (line);
