@@ -52,7 +52,7 @@ func insertJobRun(jobRun *JobRun) error {
 func queryAlerts(jobRun JobRun) ([]Alert, error) {
 	ctx, cancel := timeoutContext()
 	defer cancel()
-	rows, err := pool.Query(ctx, "SELECT id, line, rule, description FROM alerts ORDER BY line")
+	rows, err := pool.Query(ctx, "SELECT id, line, rule, description FROM alerts WHERE jobrun_id = $1 ORDER BY line", jobRun.Id)
 	if err != nil {
 		return nil, err
 	}
