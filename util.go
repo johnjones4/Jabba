@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/felixge/httpsnoop"
@@ -66,6 +67,15 @@ func errorResponse(w http.ResponseWriter, err error) {
 	})
 }
 
+func errorPage(w http.ResponseWriter, err error) {
+	tmpl, err1 := template.ParseFiles("templates/error.html")
+	if err1 != nil {
+		fmt.Println(err1)
+		return
+	}
+	tmpl.Execute(w, ErrorPageData{fmt.Sprint(err)})
+}
+
 func jsonResponse(w http.ResponseWriter, info interface{}) {
 	jsonInfo, err := json.Marshal(info)
 	if err != nil {
@@ -86,4 +96,15 @@ func getLimitOffset(req *http.Request) (int, int, error) {
 		return 0, 0, err
 	}
 	return limit, offset, nil
+}
+
+func getPage(req *http.Request) int {
+	q := req.URL.Query()
+	if page, ok := q["page"]; ok {
+		pageI, err := strconv.Atoi(page[0])
+		if err == nil {
+			return pageI
+		}
+	}
+	return 0
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"text/template"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -91,9 +92,52 @@ func getJobRun(w http.ResponseWriter, req *http.Request) {
 	jsonResponse(w, jobRun)
 }
 
+func displayJobRuns(w http.ResponseWriter, req *http.Request) {
+	page := getPage(req)
+	perPage := 10
+	jobRuns, err := queryJobRuns(perPage, perPage*page)
+	if err != nil {
+		errorPage(w, err)
+		return
+	}
+	tmpl, err := template.ParseFiles("templates/list.html")
+	if err != nil {
+		errorPage(w, err)
+		return
+	}
+	tmpl.Execute(w, ListPageData{Page: page, NextPage: page + 1, PreviousPage: page - 1, JobRuns: jobRuns})
+}
+
+func displayJobRun(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		errorPage(w, err)
+		return
+	}
+	jobRun, err := queryJobRun(id)
+	if err != nil {
+		errorPage(w, err)
+		return
+	}
+	err = loadJobRunLog(&jobRun)
+	if err != nil {
+		errorPage(w, err)
+		return
+	}
+	tmpl, err := template.ParseFiles("templates/detail.html")
+	if err != nil {
+		errorPage(w, err)
+		return
+	}
+	tmpl.Execute(w, DetailPageData{JobRun: jobRun})
+}
+
 func runHttpServer() {
 	r := mux.NewRouter()
 
+	r.HandleFunc("/", displayJobRuns)
+	r.HandleFunc("/jobrun/{id}", displayJobRun)
 	r.HandleFunc("/api", getStatus)
 	r.HandleFunc("/api/jobrun/{job}", postJobRun).Methods("POST")
 	r.HandleFunc("/api/jobrun", getJobRuns).Methods("GET")

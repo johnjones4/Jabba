@@ -44,3 +44,18 @@ type HTTPReqInfo struct {
 	duration  time.Duration
 	userAgent string
 }
+
+type ListPageData struct {
+	Page         int
+	NextPage     int
+	PreviousPage int
+	JobRuns      []JobRun
+}
+
+type DetailPageData struct {
+	JobRun JobRun
+}
+
+type ErrorPageData struct {
+	Error string
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job {{.JobRun.Job}}/#{{.JobRun.Id}}</title>
+</head>
+<body>
+  <h1>Job {{.JobRun.Job}}/#{{.JobRun.Id}}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Line</th>
+        <th>Rule</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .JobRun.Alerts}}
+        <tr>
+          <td>{{.Id}}</td>
+          <td>{{.Line}}</td>
+          <td>{{.Rule}}</td>
+          <td>{{.Description}}</td>
+        </tr>
+      {{end}}
+    </tbody>
+  </table>
+  <pre>{{.JobRun.Log}}</pre>
+</body>
+</html>
