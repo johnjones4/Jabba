@@ -103,7 +103,7 @@ func queryJobRun(id int) (JobRun, error) {
 	var jobRun JobRun
 	err := pool.QueryRow(ctx, "SELECT id, created, job FROM jobruns WHERE id = $1",
 		id,
-	).Scan(&jobRun.Id, &jobRun.Created, jobRun.Job)
+	).Scan(&jobRun.Id, &jobRun.Created, &jobRun.Job)
 	if err != nil {
 		return jobRun, err
 	}
