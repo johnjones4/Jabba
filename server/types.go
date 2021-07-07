@@ -16,7 +16,6 @@ type JobDefinition struct {
 
 type Alert struct {
 	Id          int    `json:"id"`
-	Order       int    `json:"order"`
 	Line        int    `json:"line"`
 	Rule        string `json:"rule"`
 	Description string `json:"description"`

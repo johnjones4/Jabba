@@ -42,17 +42,14 @@ func generateAlerts(jobRun *JobRun) error {
 	}
 	alerts := make([]Alert, 0)
 	lines := strings.Split(jobRun.Log, "\n")
-	o := 0
 	for lineNo, line := range lines {
 		for _, regex := range jd.Regexes {
 			if regex.Match([]byte(line)) {
 				alerts = append(alerts, Alert{
-					Order:       o,
 					Line:        lineNo,
 					Rule:        regex.String(),
 					Description: line,
 				})
-				o++
 			}
 		}
 	}

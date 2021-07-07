@@ -35,9 +35,8 @@ func insertJobRun(jobRun *JobRun) error {
 	}
 	for i, alert := range jobRun.Alerts {
 		var id int
-		err := pool.QueryRow(ctx, "INSERT INTO alerts (jobrun_id, order, line, rule, description) VALUES ($1,$2,$3,$4,$5) RETURNING \"id\"",
+		err := pool.QueryRow(ctx, "INSERT INTO alerts (jobrun_id, line, rule, description) VALUES ($1,$2,$3,$4) RETURNING \"id\"",
 			jobRun.Id,
-			alert.Order,
 			alert.Line,
 			alert.Rule,
 			alert.Description,
@@ -53,7 +52,7 @@ func insertJobRun(jobRun *JobRun) error {
 func queryAlerts(jobRun JobRun) ([]Alert, error) {
 	ctx, cancel := timeoutContext()
 	defer cancel()
-	rows, err := pool.Query(ctx, "SELECT id, order, line, rule, description FROM alerts ORDER BY order")
+	rows, err := pool.Query(ctx, "SELECT id, line, rule, description FROM alerts ORDER BY order")
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +62,6 @@ func queryAlerts(jobRun JobRun) ([]Alert, error) {
 		alert := Alert{}
 		rows.Scan(
 			&alert.Id,
-			&alert.Order,
 			&alert.Line,
 			&alert.Rule,
 			&alert.Description,
