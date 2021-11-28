@@ -31,7 +31,9 @@ func newSaveJobRoute(g job.AlertGenerator, u upstream.Upstream) func(w http.Resp
 		event := core.Event{
 			EventVendorType: chi.URLParam(req, "type"),
 			EventVendorID:   uuid.NewString(),
-			Log:             string(body),
+			VendorInfo: map[string]string{
+				"log": string(body),
+			},
 		}
 
 		err = g.GenerateAlerts(&event)

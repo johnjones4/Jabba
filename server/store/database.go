@@ -3,10 +3,7 @@ package store
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"os"
-	"path"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/johnjones4/Jabba/core"
@@ -17,16 +14,15 @@ type Scannable interface {
 }
 
 type PGStore struct {
-	pool       *pgxpool.Pool
-	logDirPath string
+	pool *pgxpool.Pool
 }
 
-func NewPGStore(url string, logDirPath string) (*PGStore, error) {
+func NewPGStore(url string) (*PGStore, error) {
 	pool, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}
-	return &PGStore{pool, logDirPath}, nil
+	return &PGStore{pool}, nil
 }
 
 func (s *PGStore) SaveEvent(event *core.Event) error {
@@ -50,14 +46,6 @@ func (s *PGStore) SaveEvent(event *core.Event) error {
 	).Scan(&event.ID)
 	if err != nil {
 		return err
-	}
-
-	if event.Log != "" {
-		logPath := path.Join(s.logDirPath, fmt.Sprintf("%d.log", event.ID))
-		err = os.WriteFile(logPath, []byte(event.Log), 0777)
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
@@ -88,19 +76,6 @@ func (s *PGStore) GetEvent(id int) (core.Event, error) {
 	event, err := parseEvent(row)
 	if err != nil {
 		return core.Event{}, err
-	}
-
-	logPath := path.Join(s.logDirPath, fmt.Sprintf("%d.log", event.ID))
-	_, err = os.Stat(logPath)
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		log, err := os.ReadFile(logPath)
-		if err != nil {
-			return core.Event{}, err
-		}
-
-		event.Log = string(log)
-	} else if err != nil {
-		return core.Event{}, nil
 	}
 
 	return event, nil

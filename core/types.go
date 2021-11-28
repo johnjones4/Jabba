@@ -17,5 +17,4 @@ type Event struct {
 	VendorInfo      interface{} `json:"vendorInfo"`
 	Alerts          []Alert     `json:"alerts"`
 	IsNormal        bool        `json:"isNormal"`
-	Log             string      `json:"log"`
 }

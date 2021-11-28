@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	s, err := store.NewPGStore(os.Getenv("DATABASE_URL"), os.Getenv("LOG_STORAGE"))
+	s, err := store.NewPGStore(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
