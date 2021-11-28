@@ -8,4 +8,4 @@ WORKDIR /go/src/app/server
 RUN go get ./...
 RUN go build .
 
-CMD ["/go/src/app/main"]
+CMD ["/go/src/app/server/main"]
