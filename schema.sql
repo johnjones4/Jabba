@@ -1,20 +1,11 @@
-CREATE TABLE IF NOT EXISTS jobruns (
+CREATE TABLE IF NOT EXISTS events (
   id INT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  event_vendor_type VARCHAR(255) NOT NULL,
+  event_vendor_id VARCHAR(255) NOT NULL,
   created TIMESTAMP NOT NULL,
-  job VARCHAR(255) NOT NULL
+  vendor_info JSON NOT NULL,
+  alerts JSON NOT NULL,
+  is_normal BOOLEAN NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_created ON jobruns (created);
-CREATE INDEX IF NOT EXISTS idx_job ON jobruns (job);
-
-CREATE TABLE IF NOT EXISTS alerts (
-  id INT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  jobrun_id INT NOT NULL,
-  line INT NOT NULL,
-  rule VARCHAR(1023) NOT NULL,
-  description TEXT NOT NULL,
-  CONSTRAINT fk_jobrun FOREIGN KEY(jobrun_id) REFERENCES jobruns(id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_jobrun_id ON alerts (jobrun_id);
-CREATE INDEX IF NOT EXISTS idx_line ON alerts (line);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_vendor ON events (event_vendor_type, event_vendor_id);
