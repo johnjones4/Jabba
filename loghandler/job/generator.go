@@ -44,6 +44,7 @@ func (g *AlertGeneratorConcrete) GenerateAlerts(e *core.Event) error {
 		}
 	}
 	e.Alerts = alerts
+	e.IsNormal = len(alerts) == 0
 	return nil
 }
 

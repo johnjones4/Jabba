@@ -1,19 +1,17 @@
 package main
 
 import (
+	"io"
+	"log"
 	"main/job"
-	"main/routes"
 	"main/upstream"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/swaggest/rest"
+	"github.com/google/uuid"
+	"github.com/johnjones4/Jabba/core"
 	"github.com/swaggest/rest/chirouter"
-	"github.com/swaggest/rest/jsonschema"
-	"github.com/swaggest/rest/nethttp"
-	"github.com/swaggest/rest/openapi"
-	"github.com/swaggest/rest/request"
 	"github.com/swaggest/rest/response"
 )
 
@@ -21,27 +19,50 @@ func getStatus(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(200)
 }
 
+func newSaveJobRoute(g job.AlertGenerator, u upstream.Upstream) func(w http.ResponseWriter, req *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		body, err := io.ReadAll(req.Body)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(400)
+			return
+		}
+
+		event := core.Event{
+			EventVendorType: chi.URLParam(req, "type"),
+			EventVendorID:   uuid.NewString(),
+			Log:             string(body),
+		}
+
+		err = g.GenerateAlerts(&event)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(400)
+			return
+		}
+
+		err = u.LogEvent(&event)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(400)
+			return
+		}
+
+		w.WriteHeader(200)
+	}
+}
+
 func initAPIServer(g job.AlertGenerator, u upstream.Upstream) http.Handler {
-	apiSchema := &openapi.Collector{}
-
-	validatorFactory := jsonschema.NewFactory(apiSchema, apiSchema)
-	decoderFactory := request.NewDecoderFactory()
-	decoderFactory.ApplyDefaults = true
-	decoderFactory.SetDecoderFunc(rest.ParamInPath, chirouter.PathToURLValues)
-
 	r := chirouter.NewWrapper(chi.NewRouter())
 
 	r.Use(
-		middleware.Recoverer,                          // Panic recovery.
-		nethttp.OpenAPIMiddleware(apiSchema),          // Documentation collector.
-		request.DecoderMiddleware(decoderFactory),     // Request decoder setup.
-		request.ValidatorMiddleware(validatorFactory), // Request validator setup.
-		response.EncoderMiddleware,                    // Response encoder setup.
+		middleware.Recoverer,
+		response.EncoderMiddleware,
 		middleware.Logger,
 	)
 
 	r.Method(http.MethodGet, "/api", http.HandlerFunc(getStatus))
-	r.Method(http.MethodPost, "/api/job", nethttp.NewHandler(routes.SaveJobUsecase(g, u)))
+	r.Method(http.MethodPost, "/api/job/{type}", http.HandlerFunc(newSaveJobRoute(g, u)))
 
 	return r
 }
