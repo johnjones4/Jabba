@@ -5,20 +5,27 @@ import (
 	"main/core"
 	"main/pollers"
 	"os"
+	"time"
 
 	jabbacore "github.com/johnjones4/Jabba/core"
 )
 
 func main() {
-	a := pollers.NewAbodePoller(os.Getenv("ABODE_USERNAME"), os.Getenv("ABODE_PASSWORD"))
-	err := a.Authorize()
-	if err != nil {
-		log.Fatal(err)
+	pollers := []core.Poller{
+		pollers.NewINetPoller(),
+		pollers.NewAbodePoller(os.Getenv("ABODE_USERNAME"), os.Getenv("ABODE_PASSWORD")),
 	}
-
+	for _, p := range pollers {
+		err := p.Setup()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	u := jabbacore.NewUpstreamConcrete(os.Getenv("UPSTREAM_URL"))
-
-	eChan := make(chan error, 255)
-	pw := core.NewPollWatcher()
-	a.Poll(&pw, eChan, u)
+	for _, p := range pollers {
+		go p.Poll(u)
+	}
+	for {
+		time.Sleep(time.Hour)
+	}
 }

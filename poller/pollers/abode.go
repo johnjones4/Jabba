@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"main/core"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -48,14 +47,14 @@ type abodeClaimResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func NewAbodePoller(username string, password string) AbodePoller {
-	return AbodePoller{
+func NewAbodePoller(username string, password string) *AbodePoller {
+	return &AbodePoller{
 		username: username,
 		password: password,
 	}
 }
 
-func (p *AbodePoller) Authorize() error {
+func (p *AbodePoller) authorize() error {
 	form := make(url.Values)
 	form.Add("id", p.username)
 	form.Add("password", p.password)
@@ -104,13 +103,13 @@ func (p *AbodePoller) Authorize() error {
 
 	p.accessToken = claimResp.AccessToken
 	p.tokenType = claimResp.TokenType
-	p.expiration = time.Now().Add(time.Second * time.Duration(claimResp.ExpiresIn/2))
+	p.expiration = time.Now().UTC().Add(time.Second * time.Duration(claimResp.ExpiresIn/2))
 
 	return nil
 }
 
 func (p *AbodePoller) NeedsAuthorization() bool {
-	return p.accessToken == "" || p.expiration.Before(time.Now())
+	return p.accessToken == "" || p.expiration.Before(time.Now().UTC())
 }
 
 func (p *AbodePoller) runALoop(u jabbacore.Upstream) error {
@@ -150,7 +149,7 @@ func (p *AbodePoller) runALoop(u jabbacore.Upstream) error {
 
 func (p *AbodePoller) getEvents() ([]abodeTimelineEvent, error) {
 	if p.NeedsAuthorization() {
-		err := p.Authorize()
+		err := p.authorize()
 		if err != nil {
 			return nil, err
 		}
@@ -218,12 +217,15 @@ func (p *AbodePoller) emitEvents(u jabbacore.Upstream, events []abodeTimelineEve
 	return nil
 }
 
-func (p *AbodePoller) Poll(w *core.PollWatcher, e chan error, u jabbacore.Upstream) {
-	for w.Continue() {
+func (p *AbodePoller) Setup() error {
+	return p.authorize()
+}
+
+func (p *AbodePoller) Poll(u jabbacore.Upstream) {
+	for {
 		err := p.runALoop(u)
 		if err != nil {
 			log.Println(err)
-			e <- err
 		}
 
 		time.Sleep(time.Minute)
