@@ -4,7 +4,6 @@ import (
 	"io"
 	"log"
 	"main/job"
-	"main/upstream"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -19,7 +18,7 @@ func getStatus(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(200)
 }
 
-func newSaveJobRoute(g job.AlertGenerator, u upstream.Upstream) func(w http.ResponseWriter, req *http.Request) {
+func newSaveJobRoute(g job.AlertGenerator, u core.Upstream) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		body, err := io.ReadAll(req.Body)
 		if err != nil {
@@ -54,7 +53,7 @@ func newSaveJobRoute(g job.AlertGenerator, u upstream.Upstream) func(w http.Resp
 	}
 }
 
-func initAPIServer(g job.AlertGenerator, u upstream.Upstream) http.Handler {
+func initAPIServer(g job.AlertGenerator, u core.Upstream) http.Handler {
 	r := chirouter.NewWrapper(chi.NewRouter())
 
 	r.Use(

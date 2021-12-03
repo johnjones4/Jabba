@@ -17,7 +17,9 @@ func NewEventUseCase(s store.Store) usecase.IOInteractor {
 			out = output.(*core.Event)
 		)
 
-		in.Created = time.Now()
+		if in.Created.Unix() == 0 {
+			in.Created = time.Now()
+		}
 
 		err := s.SaveEvent(in)
 		if err != nil {

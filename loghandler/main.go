@@ -3,9 +3,10 @@ package main
 import (
 	"log"
 	"main/job"
-	"main/upstream"
 	"net/http"
 	"os"
+
+	"github.com/johnjones4/Jabba/core"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	u := upstream.NewUpstreamConcrete(os.Getenv("UPSTREAM_URL"))
+	u := core.NewUpstreamConcrete(os.Getenv("UPSTREAM_URL"))
 
 	h := initAPIServer(g, u)
 	err = http.ListenAndServe(os.Getenv("HTTP_HOST"), h)

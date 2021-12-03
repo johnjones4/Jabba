@@ -1,4 +1,4 @@
-package upstream
+package core
 
 import (
 	"bytes"
@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/johnjones4/Jabba/core"
 )
 
 type Upstream interface {
-	LogEvent(*core.Event) error
+	LogEvent(*Event) error
 }
 
 type UpstreamConcrete struct {
@@ -22,7 +20,7 @@ func NewUpstreamConcrete(host string) Upstream {
 	return &UpstreamConcrete{host}
 }
 
-func (u *UpstreamConcrete) LogEvent(e *core.Event) error {
+func (u *UpstreamConcrete) LogEvent(e *Event) error {
 	jsonBytes, err := json.Marshal(e)
 	if err != nil {
 		return err
@@ -33,13 +31,18 @@ func (u *UpstreamConcrete) LogEvent(e *core.Event) error {
 		return err
 	}
 
-	if resp.StatusCode != 200 {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
 
+	if resp.StatusCode != 200 {
 		return fmt.Errorf("bad response: %s", string(body))
+	}
+
+	err = json.Unmarshal(body, e)
+	if err != nil {
+		return err
 	}
 
 	return nil
