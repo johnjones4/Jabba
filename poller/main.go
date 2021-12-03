@@ -14,6 +14,7 @@ func main() {
 	pollers := []core.Poller{
 		pollers.NewINetPoller(),
 		pollers.NewAbodePoller(os.Getenv("ABODE_USERNAME"), os.Getenv("ABODE_PASSWORD")),
+		pollers.NewSitesPoller(os.Getenv("SITES_CONFIG")),
 	}
 	for _, p := range pollers {
 		err := p.Setup()
