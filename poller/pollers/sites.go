@@ -56,7 +56,7 @@ func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
 			"statusCode": res.StatusCode,
 		},
 		Created:  time.Now().UTC(),
-		IsNormal: !status,
+		IsNormal: status,
 		Alerts:   []jabbacore.Alert{},
 	}
 	err = u.LogEvent(&jEvent)
