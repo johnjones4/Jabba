@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jabba</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+  <script type="module">
+    import { h, Component, render } from 'https://unpkg.com/preact?module';
+    import htm from 'https://unpkg.com/htm?module';
+  
+    const html = htm.bind(h);
+
+    const StatusOk = 'ok'
+    const StatusAbnormal = 'abnormal'
+    const StatusRecovering = 'recovering'
+
+    class App extends Component {
+      constructor(props) {
+        super(props)
+        this.state = {
+          info: []
+        }
+      }
+
+      render() {
+        return h('div', {
+          className: 'jabba'
+        }, this.state.info.map((status, i) => {
+          return h('div', {
+            key: i,
+            className: `jabba-status state-${status.status}`
+          }, [html`<div className='jabba-status-inner'>${status.eventVendorName}</div>`])
+        }))
+      }
+
+      async loadEventVendorInfo() {
+        const typesResponse = await fetch('/api/event-vendor-type')
+        const typesInfo = await typesResponse.json()
+        const allInfo = []
+        for (let eventVendorType of typesInfo.eventVendorTypes) {
+          const statusResponse = await fetch(`/api/event-vendor-type/${eventVendorType}`)
+          const status = await statusResponse.json()
+          allInfo.push(status)
+        }
+        this.setState({
+          info: allInfo
+        })
+      }
+
+      async reload() {
+        try {
+          await this.loadEventVendorInfo()
+        } catch (e) {
+          console.error(e)
+        }
+      }
+
+      async componentDidMount() {
+        this.reload()
+        setInterval(async () => {
+          this.reload()
+        }, 60000)
+      }
+    }
+  
+    render(html`<${App} />`, document.body);
+  </script>
+  </body>
+</html>

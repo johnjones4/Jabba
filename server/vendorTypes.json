@@ -1,0 +1,15 @@
+{
+  "abode": "Abode",
+  "github": "GitHub Backup",
+  "glacier": "Glacier",
+  "inet": "Internet",
+  "jabba-loghandler": "Jabba Log Handler",
+  "jabba-server": "Jabba",
+  "lastpass": "LastPass Backup",
+  "mail": "Email Backup",
+  "nginx": "NGINX",
+  "plex": "Plex",
+  "rclone": "RClone Backup",
+  "weather-api": "Weather API",
+  "weather-station": "Weather Station"
+}

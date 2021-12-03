@@ -81,6 +81,38 @@ func (s *PGStore) GetEvent(id int) (core.Event, error) {
 	return event, nil
 }
 
+func (s *PGStore) GetEventVendorTypes() ([]string, error) {
+	rows, err := s.pool.Query(context.Background(), "SELECT DISTINCT(event_vendor_type) FROM events ORDER BY event_vendor_type")
+	if err != nil {
+		return nil, err
+	}
+
+	arr := make([]string, 0)
+	for rows.Next() {
+		var val string
+		rows.Scan(&val)
+		arr = append(arr, val)
+	}
+	return arr, nil
+}
+
+func (s *PGStore) GetEventsForVendorType(t string, limit int, offset int) ([]core.Event, error) {
+	rows, err := s.pool.Query(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, alerts, is_normal FROM events WHERE event_vendor_type = $1 ORDER BY created DESC LIMIT $2 OFFSET $3", t, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	events := make([]core.Event, 0)
+	for rows.Next() {
+		event, err := parseEvent(rows)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}
+
 func parseEvent(row Scannable) (core.Event, error) {
 	e := core.Event{}
 	var vendorInfoBytes []byte
