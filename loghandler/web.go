@@ -5,6 +5,7 @@ import (
 	"log"
 	"main/job"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -33,6 +34,7 @@ func newSaveJobRoute(g job.AlertGenerator, u core.Upstream) func(w http.Response
 			VendorInfo: map[string]string{
 				"log": string(body),
 			},
+			Created: time.Now().UTC(),
 		}
 
 		err = g.GenerateAlerts(&event)
