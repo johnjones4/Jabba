@@ -60,7 +60,7 @@ func GetEventVendorTypeInfoUseCase(s store.Store, vendorInfo map[string]string) 
 			return nil
 		}
 
-		if len(events) > 1 && !events[1].IsNormal {
+		if len(events) > 1 && !events[1].IsNormal && events[1].Created.After(time.Now().UTC().Add(-24*time.Hour)) {
 			out.Status = StatusRecovering
 			return nil
 		}
