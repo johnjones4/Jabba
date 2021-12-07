@@ -32,6 +32,16 @@ export default class Event extends Component<EventProps, EventState> {
     this.loadInfo()
   }
 
+  infoString() {
+    if (this.state.event?.vendorInfo['log']) {
+      return this.state.event?.vendorInfo['log']
+    }
+    if (this.state.event?.vendorInfo['statusCode'] && this.state.event?.vendorInfo['body']) {
+      return [this.state.event?.vendorInfo['statusCode'], this.state.event?.vendorInfo['body']].join('\n\n')
+    }
+    return JSON.stringify(this.state.event?.vendorInfo, null, '  ')
+  }
+
   render() {
     if (!this.state.event) {
       return null
@@ -42,7 +52,7 @@ export default class Event extends Component<EventProps, EventState> {
       ['Vendor ID', this.state.event.eventVendorID],
       ['Created', this.state.event.created.toLocaleString],
       ['Status', this.state.event.isNormal ? 'Normal' : 'Abnormal'],
-      ['Info', JSON.stringify(this.state.event.vendorInfo, null, '  ')],
+      ['Info', (<pre>{this.infoString()}</pre>)],
     ]
     return (
       <div className='JabbaEvent'>

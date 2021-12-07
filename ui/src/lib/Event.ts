@@ -6,7 +6,7 @@ export interface iJabbaEvent {
   eventVendorType: string
   eventVendorID: string
   created: string
-  vendorInfo: string
+  vendorInfo: any
   isNormal: boolean
 }
 
@@ -19,7 +19,7 @@ export default class JabbaEvent {
   public readonly eventVendorType: string
   public readonly eventVendorID: string
   public readonly created: Date
-  public readonly vendorInfo: string
+  public readonly vendorInfo: any
   public readonly isNormal: boolean
 
   constructor(info: iJabbaEvent) {
