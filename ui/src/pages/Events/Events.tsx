@@ -71,7 +71,7 @@ export default class Events extends Component<EventsProps, EventsState> {
               return (
                 <tr key={i} className={event.isNormal ? 'normal' : 'abnormal'}>
                   <td>
-                    <a href={`/event/${event.id}`}>
+                    <a href={`#/event/${event.id}`}>
                       View
                     </a>
                   </td>

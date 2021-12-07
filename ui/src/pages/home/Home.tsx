@@ -40,7 +40,7 @@ export default class Home extends Component<HomeProps, HomeState> {
       <div className='Home'>
         { this.state.info.map((_info, i) => {
           return (
-            <a href={`/events?eventVendorType=${_info.eventVendorType}`} key={i} className={`Home-status state-${_info.status}`}>
+            <a href={`#/events?eventVendorType=${_info.eventVendorType}`} key={i} className={`Home-status state-${_info.status}`}>
               <div className='Home-status-inner'>{ _info.eventVendorName }</div>
             </a>
           )
