@@ -11,8 +11,9 @@ import (
 )
 
 type getEventsInput struct {
-	Offset int `query:"offset"`
-	Limit  int `query:"limit"`
+	Offset          int    `query:"offset"`
+	Limit           int    `query:"limit"`
+	EventVendorType string `query:"eventVendorType"`
 }
 
 type getEventsOutput struct {
@@ -26,7 +27,13 @@ func GetEventsUseCase(s store.Store) usecase.IOInteractor {
 			out = output.(*getEventsOutput)
 		)
 
-		events, err := s.GetEvents(in.Limit, in.Offset)
+		var events []core.Event
+		var err error
+		if in.EventVendorType != "" {
+			events, err = s.GetEventsForVendorType(in.EventVendorType, in.Limit, in.Offset)
+		} else {
+			events, err = s.GetEvents(in.Limit, in.Offset)
+		}
 		if err != nil {
 			return status.Wrap(err, status.Internal)
 		}
