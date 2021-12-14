@@ -44,8 +44,8 @@ func initAPIServer(s store.Store, vendorInfo map[string]string) http.Handler {
 	r.Method(http.MethodGet, "/api/event-vendor-types-info", http.HandlerFunc(routes.GetEventVendorTypesInfoPlaintext(s)))
 	r.Method(http.MethodGet, "/api/event-vendor-type/{eventVendorType}", nethttp.NewHandler(routes.GetEventVendorTypeInfoUseCase(s, vendorInfo)))
 	r.Method(http.MethodGet, "/api/event", nethttp.NewHandler(routes.GetEventsUseCase(s)))
+	r.Method(http.MethodGet, "/api/event/{id}", nethttp.NewHandler(routes.GetEventUseCase(s)))
 	r.Method(http.MethodPost, "/api/event", nethttp.NewHandler(routes.NewEventUseCase(s)))
-	r.Method(http.MethodGet, "/*", http.FileServer(http.Dir("../webclient")))
 
 	return r
 }

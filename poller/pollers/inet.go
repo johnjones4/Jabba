@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"main/core"
 	"net"
 	"net/http"
 	"time"
@@ -20,6 +21,7 @@ const (
 type INetPoller struct {
 	lastIPv4Address string
 	lastIPv6Address string
+	lastSuccess     time.Time
 }
 
 type ipResponse struct {
@@ -95,7 +97,7 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 		}
 	}
 
-	if p.lastIPv4Address == ipv4 && p.lastIPv6Address == ipv6 {
+	if (p.lastIPv4Address == ipv4 && p.lastIPv6Address == ipv6) && p.lastSuccess.After(time.Now().UTC().Add(-core.Day)) {
 		return nil
 	}
 
@@ -117,6 +119,7 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 
 	p.lastIPv4Address = ipv4
 	p.lastIPv6Address = ipv6
+	p.lastSuccess = time.Now().UTC()
 
 	return nil
 }

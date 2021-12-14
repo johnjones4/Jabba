@@ -32,7 +32,7 @@ func GetEventVendorTypeInfo(s store.Store, eventVendorType string) (core.Event, 
 		return lastEvent, StatusAbnormal, nil
 	}
 
-	if len(events) > 1 && !events[1].IsNormal {
+	if len(events) > 1 && !events[1].IsNormal && events[1].Created.After(time.Now().UTC().Add(-24*time.Hour)) {
 		return lastEvent, StatusRecovering, nil
 	}
 

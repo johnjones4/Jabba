@@ -1,0 +1,31 @@
+.JabbaEvent table {
+  width: 100%;
+  padding: 0;
+  border-spacing: 0;
+}
+
+.JabbaEvent table tr {
+  margin: 0;
+  padding: 0;
+}
+
+.JabbaEvent table th, .JabbaEvent table td {
+  padding: 5px;
+  margin: 0;
+  border: none;
+}
+
+.JabbaEvent table thead th {
+  background: black;
+  color: white;
+  padding: 3px;
+}
+
+.JabbaEvent .key {
+  background: black;
+  color: white;
+}
+
+.JabbaEvent .value pre {
+  white-space: pre-wrap;
+}

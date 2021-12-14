@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"main/core"
 	"net/http"
 	"os"
 	"time"
@@ -18,8 +19,9 @@ type Site struct {
 }
 
 type SitesPoller struct {
-	sourceFile string
-	status     map[Site]bool
+	sourceFile  string
+	status      map[Site]bool
+	lastSuccess time.Time
 }
 
 func NewSitesPoller(sourceFile string) *SitesPoller {
@@ -42,7 +44,7 @@ func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
 
 	status := res.StatusCode == http.StatusOK
 
-	if status == p.status[site] {
+	if status == p.status[site] && (status && p.lastSuccess.After(time.Now().UTC().Add(-core.Day))) {
 		return nil
 	}
 
@@ -63,6 +65,8 @@ func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
 	if err != nil {
 		return err
 	}
+
+	p.lastSuccess = time.Now().UTC()
 
 	return nil
 }

@@ -1,0 +1,47 @@
+.JabbaEvents table {
+  width: 100%;
+  padding: 0;
+  border-spacing: 0;
+}
+
+.JabbaEvents table tr {
+  margin: 0;
+  padding: 0;
+}
+
+.JabbaEvents table th, .JabbaEvents table td {
+  padding: 5px;
+  margin: 0;
+  border: none;
+}
+
+.JabbaEvents table thead th {
+  background: black;
+  color: white;
+  padding: 3px;
+}
+
+.JabbaEvents table tr:nth-child(2n) {
+  background: white;
+}
+
+.JabbaEvents table tr.abnormal {
+  background: var(--color-red);
+}
+
+.JabbaEvents table tr td {
+  border-left: 1px solid black;
+}
+
+.JabbaEvents table tr td:last-child {
+  border-right: 1px solid black;
+}
+
+.JabbaEvents table tr:last-child td {
+  border-bottom: 1px solid black;
+}
+
+.JabbaEvents .JabbaEvents-form {
+  display: flex;
+  flex-direction: row;
+}

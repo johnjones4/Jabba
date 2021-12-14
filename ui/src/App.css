@@ -1,0 +1,13 @@
+:root {
+  --color-red: #f71735;
+  --color-green: #0a8754;
+  --color-yellow: #ffca3a;
+  --color-blue: #1982c4;
+  --color-gray: #d8dbe2;
+}
+
+body {
+  background: var(--color-gray);
+  font-family: Helvetica, sans-serif;
+}
+
