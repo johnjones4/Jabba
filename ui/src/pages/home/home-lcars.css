@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+
+.Home-theme-lcars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow-y: scroll;
+  background: black;
+  grid-auto-rows: 70px;
+  padding: 70px 20px 20px 210px;
+  font-family: 'Antonio', sans-serif;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.Home-theme-lcars::before {
+  content: 'LCARS';
+  text-align: right;
+  padding: 35px 10px 0 0;
+  font-size: 40px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  bottom: 10px;
+  width: 180px;
+  background: #F3AD7D;
+  border-radius: 140px 0 0 0;
+}
+
+.Home-theme-lcars::after {
+  content: ' ';
+  position: absolute;
+  top: 10px;
+  left: 190px;
+  right: 10px;
+  height: 40px;
+  background: #F3AD7D;
+  /* border-radius: 140px 0 0 0; */
+}
+
+.Home-theme-lcars .Home-status {
+  padding: 0 1em 0.5em 0;
+  font-size: 22px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: right;
+  border-radius: 35px;
+  color: black;
+  text-decoration: none;
+}
+
+.Home-theme-lcars .Home-status.state-ok {
+  background-color: #9A98F6;
+}
+
+.Home-theme-lcars .Home-status.state-abnormal {
+  animation-duration: 0.2s;
+  animation-name: lcars-blink-red;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.Home-theme-lcars .Home-status.state-recovering {
+  background-color: #F19D38;
+}
+
+@keyframes lcars-blink-red {
+  from {
+    background-color: transparent
+  }
+
+  to {
+    background-color: #BE6663;
+  }
+}

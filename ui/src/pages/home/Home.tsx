@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
+import { useSearchParams } from "react-router-dom"
 import VendorType from '../../lib/VendorType';
 import './home.css'
+import './home-default.css'
+import './home-lcars.css'
 
 interface HomeProps {
-
+  theme: string | null
 }
 
 interface HomeState {
   info: Array<VendorType>
 }
 
-export default class Home extends Component<HomeProps, HomeState> {
+class Home extends Component<HomeProps, HomeState> {
   constructor(props: HomeProps) {
     super(props)
     this.state = {
@@ -37,7 +40,7 @@ export default class Home extends Component<HomeProps, HomeState> {
 
   render() {
     return (
-      <div className='Home'>
+      <div className={['Home', `Home-theme-${this.props.theme ? this.props.theme : 'default'}`].join(' ')}>
         { this.state.info.map((_info, i) => {
           return (
             <a href={`#/events?eventVendorType=${_info.eventVendorType}`} key={i} className={`Home-status state-${_info.status}`}>
@@ -50,3 +53,11 @@ export default class Home extends Component<HomeProps, HomeState> {
   }
 
 }
+
+const HomeWrapper = () => {
+  const [params] = useSearchParams()
+  const theme = params.get('theme')
+  return (<Home theme={theme} />)
+}
+
+export default HomeWrapper
