@@ -55,6 +55,8 @@ func NewAbodePoller(username string, password string) *AbodePoller {
 }
 
 func (p *AbodePoller) authorize() error {
+	log.Println("Authenticating with Abode")
+
 	form := make(url.Values)
 	form.Add("id", p.username)
 	form.Add("password", p.password)
@@ -77,6 +79,8 @@ func (p *AbodePoller) authorize() error {
 	if err != nil {
 		return err
 	}
+
+	log.Println("Received login token from Abode")
 
 	claimReq, err := http.NewRequest("GET", "https://my.goabode.com/api/auth2/claims", nil)
 	if err != nil {
@@ -104,6 +108,8 @@ func (p *AbodePoller) authorize() error {
 	p.accessToken = claimResp.AccessToken
 	p.tokenType = claimResp.TokenType
 	p.expiration = time.Now().UTC().Add(time.Second * time.Duration(claimResp.ExpiresIn/2))
+
+	log.Printf("Received access token from Abode. Expires on %s\n", p.expiration.String())
 
 	return nil
 }
@@ -148,6 +154,8 @@ func (p *AbodePoller) runALoop(u jabbacore.Upstream) error {
 }
 
 func (p *AbodePoller) getEvents() ([]abodeTimelineEvent, error) {
+	log.Println("Getting recent Abode events")
+
 	if p.NeedsAuthorization() {
 		err := p.authorize()
 		if err != nil {
@@ -179,8 +187,11 @@ func (p *AbodePoller) getEvents() ([]abodeTimelineEvent, error) {
 	var allEvents []abodeTimelineEvent
 	err = json.Unmarshal(httpBody, &allEvents)
 	if err != nil {
+		log.Println(string(httpBody))
 		return nil, err
 	}
+
+	log.Printf("Got back %d Abode events.\n", len(allEvents))
 
 	return allEvents, nil
 }

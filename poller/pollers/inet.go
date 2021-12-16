@@ -54,12 +54,14 @@ func makeCall(endpoint string) (string, error) {
 
 func isTCPError(err error) bool {
 	if _, ok := err.(net.Error); ok {
+		log.Println("Error connecting")
 		return true
 	}
 	return false
 }
 
 func logINetDown(u jabbacore.Upstream) error {
+	log.Println("Logging internet as down")
 	jEvent := jabbacore.Event{
 		EventVendorType: "inet",
 		EventVendorID:   uuid.NewString(),
@@ -79,6 +81,7 @@ func logINetDown(u jabbacore.Upstream) error {
 }
 
 func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
+	log.Println("Checking internet status ...")
 	ipv4, err := makeCall(ipV4Endpoint)
 	if err != nil {
 		if isTCPError(err) {
@@ -97,9 +100,14 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 		}
 	}
 
+	log.Printf("Received addresses: %s, %s\n", ipv4, ipv6)
+
 	if (p.lastIPv4Address == ipv4 && p.lastIPv6Address == ipv6) && p.lastSuccess.After(time.Now().UTC().Add(-core.Day)) {
+		log.Println("Internet info unchanged from last loop")
 		return nil
 	}
+
+	log.Println("Logging change in internet status")
 
 	jEvent := jabbacore.Event{
 		EventVendorType: "inet",

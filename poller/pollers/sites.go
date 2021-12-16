@@ -32,6 +32,8 @@ func NewSitesPoller(sourceFile string) *SitesPoller {
 }
 
 func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
+	log.Printf("Checking status of %s.\n", site.URL)
+
 	res, err := http.Get(site.URL)
 	if err != nil {
 		return err
@@ -41,6 +43,8 @@ func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("Status of %s is %d.\n", site.URL, res.StatusCode)
 
 	status := res.StatusCode == http.StatusOK
 
@@ -66,7 +70,9 @@ func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
 		return err
 	}
 
-	p.lastSuccess = time.Now().UTC()
+	if status {
+		p.lastSuccess = time.Now().UTC()
+	}
 
 	return nil
 }
