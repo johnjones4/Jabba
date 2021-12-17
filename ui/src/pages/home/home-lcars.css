@@ -6,17 +6,19 @@
   left: 0;
   bottom: 0;
   right: 0;
-  overflow-y: scroll;
   background: black;
-  grid-auto-rows: 70px;
   padding: 70px 20px 20px 210px;
   font-family: 'Antonio', sans-serif;
   text-transform: uppercase;
   font-weight: 700;
 }
 
+.Home-theme-lcars .Home-statuses {
+  grid-auto-rows: 55px;
+}
+
 .Home-theme-lcars::before {
-  content: 'LCARS';
+  content: 'System Stautus';
   text-align: right;
   padding: 35px 10px 0 0;
   font-size: 40px;
@@ -42,15 +44,13 @@
 
 .Home-theme-lcars .Home-status {
   padding: 0 1em 0.5em 0;
-  font-size: 22px;
+  font-size: 18px;
   display: flex;
   align-items: flex-end;
   justify-content: right;
-  border-radius: 35px;
+  border-radius: 30px;
   color: black;
   text-decoration: none;
-  text-align: right;
-  float: right;
 }
 
 .Home-theme-lcars .Home-status.state-ok {
@@ -76,4 +76,24 @@
   to {
     background-color: #BE6663;
   }
+}
+
+.Home-theme-lcars .Home-bad-statuses-details-nonempty {
+  color: white;
+  border-left: 50px solid #BE6663;
+  border-top: 20px solid #BE6663;
+  border-bottom: 20px solid #BE6663;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-left: 30px;
+  padding: 30px;
+  height: 85%;
+}
+
+.Home-theme-lcars .Home-bad-status-detail {
+  padding-bottom: 40px;
+}
+
+.Home-theme-lcars .Home-bad-status-detail:last-child {
+  padding-bottom: 200px;
 }
