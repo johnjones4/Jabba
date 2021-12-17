@@ -85,6 +85,9 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 	ipv4, err := makeCall(ipV4Endpoint)
 	if err != nil {
 		if isTCPError(err) {
+			p.lastSuccess = time.Time{}
+			p.lastIPv4Address = ""
+			p.lastIPv6Address = ""
 			return logINetDown(u)
 		} else {
 			return err
@@ -94,6 +97,9 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 	ipv6, err := makeCall(ipV6Endpoint)
 	if err != nil {
 		if isTCPError(err) {
+			p.lastSuccess = time.Time{}
+			p.lastIPv4Address = ""
+			p.lastIPv6Address = ""
 			return logINetDown(u)
 		} else {
 			return err
