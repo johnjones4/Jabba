@@ -1,5 +1,26 @@
 .Home {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: flex-start;
+}
+
+.Home-statuses {
+  flex-grow: 1;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   grid-gap: 10px;
+}
+
+.Home-bad-statuses-details-nonempty {
+  width: 35%;
+  height: 100%;
+}
+
+.Home-bad-status-detail h2 {
+  margin: 0;
+}
+
+.Home-bad-status-detail pre {
+  white-space: pre-wrap;
 }
