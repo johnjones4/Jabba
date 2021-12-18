@@ -2,29 +2,28 @@ package routes
 
 import (
 	"log"
-	"main/shared"
-	"main/store"
+	statusEngine "main/status"
 	"net/http"
 	"strings"
 )
 
-func GetEventVendorTypesInfoPlaintext(s store.Store) func(w http.ResponseWriter, req *http.Request) {
+func GetEventVendorTypesInfoPlaintext(se statusEngine.StatusEngine) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		vendorTypes := strings.Split(req.URL.Query()["types"][0], ",")
 		responses := make([]byte, len(vendorTypes))
 		for i, t := range vendorTypes {
-			_, infoStatus, err := shared.GetEventVendorTypeInfo(s, t)
+			s, err := se.ProcessEventsForVendorType(t)
 			if err != nil {
 				log.Println(err)
 				w.WriteHeader(200)
 				return
 			}
-			switch infoStatus {
-			case shared.StatusOk:
+			switch s.Status {
+			case statusEngine.StatusOk:
 				responses[i] = '0'
-			case shared.StatusRecovering:
+			case statusEngine.StatusRecovering:
 				responses[i] = '1'
-			case shared.StatusAbnormal:
+			case statusEngine.StatusAbnormal:
 				responses[i] = '2'
 			}
 		}

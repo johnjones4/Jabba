@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	statusEngine "main/status"
 	"main/store"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/swaggest/usecase/status"
 )
 
-func NewEventUseCase(s store.Store) usecase.IOInteractor {
+func NewEventUseCase(s store.Store, se statusEngine.StatusEngine) usecase.IOInteractor {
 	return usecase.NewIOI(new(core.Event), new(core.Event), func(ctx context.Context, input, output interface{}) error {
 		var (
 			in  = input.(*core.Event)
@@ -22,6 +23,11 @@ func NewEventUseCase(s store.Store) usecase.IOInteractor {
 		}
 
 		err := s.SaveEvent(in)
+		if err != nil {
+			return status.Wrap(err, status.Internal)
+		}
+
+		_, err = se.HandleNewEvent(*in)
 		if err != nil {
 			return status.Wrap(err, status.Internal)
 		}

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"main/status"
 	"main/store"
 	"net/http"
 	"os"
@@ -24,7 +25,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	h := initAPIServer(s, vendorInfo)
+
+	se := status.NewMemoryStatusEngine(vendorInfo, s)
+	go se.Start()
+
+	h := initAPIServer(s, se)
 	err = http.ListenAndServe(os.Getenv("HTTP_HOST"), h)
 	if err != nil {
 		log.Fatal(err)
