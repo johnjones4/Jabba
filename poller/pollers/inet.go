@@ -71,7 +71,6 @@ func logINetDown(u jabbacore.Upstream) error {
 		},
 		Created:  time.Now().UTC(),
 		IsNormal: false,
-		Alerts:   []jabbacore.Alert{},
 	}
 	err := u.LogEvent(&jEvent)
 	if err != nil {
@@ -124,7 +123,6 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 		},
 		Created:  time.Now().UTC(),
 		IsNormal: true,
-		Alerts:   []jabbacore.Alert{},
 	}
 	err = u.LogEvent(&jEvent)
 	if err != nil {

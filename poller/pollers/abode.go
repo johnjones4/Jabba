@@ -218,7 +218,6 @@ func (p *AbodePoller) emitEvents(u jabbacore.Upstream, events []abodeTimelineEve
 			},
 			Created:  time.Unix(int64(tstamp), 0),
 			IsNormal: true,
-			Alerts:   []jabbacore.Alert{},
 		}
 		err = u.LogEvent(&jEvent)
 		if err != nil {

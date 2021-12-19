@@ -27,25 +27,16 @@ func (g *AlertGeneratorConcrete) GenerateAlerts(e *core.Event) error {
 	if jd == nil {
 		return fmt.Errorf("bad job: %s", e.EventVendorType)
 	}
-	alerts := make([]core.Alert, 0)
 	info := e.VendorInfo.(map[string]string)
 	lines := strings.Split(info["log"], "\n")
-	for lineNo, line := range lines {
+	e.IsNormal = true
+	for _, line := range lines {
 		for _, regex := range jd.Regexes {
 			if regex.Match([]byte(line)) {
-				alerts = append(alerts, core.Alert{
-					Type: "log",
-					Info: LogAlert{
-						Line:        lineNo,
-						Rule:        regex.String(),
-						Description: line,
-					},
-				})
+				e.IsNormal = false
 			}
 		}
 	}
-	e.Alerts = alerts
-	e.IsNormal = len(alerts) == 0
 	return nil
 }
 

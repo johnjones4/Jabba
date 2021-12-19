@@ -63,7 +63,6 @@ func (p *SitesPoller) checkAndLogSite(site Site, u jabbacore.Upstream) error {
 		},
 		Created:  time.Now().UTC(),
 		IsNormal: status,
-		Alerts:   []jabbacore.Alert{},
 	}
 	err = u.LogEvent(&jEvent)
 	if err != nil {
