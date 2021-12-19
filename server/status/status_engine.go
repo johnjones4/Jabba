@@ -43,5 +43,14 @@ func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
 		status.Status = StatusOk
 	}
 
+	if secondLastStatus == nil || secondLastStatus.Status != status.Status {
+		for _, a := range e.GetAlerters() {
+			err := a.SendAlert(status)
+			if err != nil {
+				return core.Status{}, err
+			}
+		}
+	}
+
 	return status, nil
 }

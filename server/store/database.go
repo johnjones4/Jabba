@@ -63,7 +63,7 @@ func (s *PGStore) GetEvents(limit int, offset int) ([]core.Event, error) {
 }
 
 func (s *PGStore) GetEvent(id int) (core.Event, error) {
-	row := s.pool.QueryRow(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, alerts, is_normal FROM events WHERE id = $1",
+	row := s.pool.QueryRow(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, is_normal FROM events WHERE id = $1",
 		id,
 	)
 
@@ -91,7 +91,7 @@ func (s *PGStore) GetEventVendorTypes() ([]string, error) {
 }
 
 func (s *PGStore) GetEventsForVendorType(t string, limit int, offset int) ([]core.Event, error) {
-	rows, err := s.pool.Query(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, alerts, is_normal FROM events WHERE event_vendor_type = $1 ORDER BY created DESC LIMIT $2 OFFSET $3", t, limit, offset)
+	rows, err := s.pool.Query(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, is_normal FROM events WHERE event_vendor_type = $1 ORDER BY created DESC LIMIT $2 OFFSET $3", t, limit, offset)
 	if err != nil {
 		return nil, err
 	}
