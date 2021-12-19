@@ -1,6 +1,7 @@
 package status
 
 import (
+	"log"
 	"main/alerter"
 	"time"
 
@@ -34,6 +35,7 @@ func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
 	secondLastStatus, _ := e.GetStatusForVendorType(lastEvent.EventVendorType)
 
 	if secondLastStatus != nil && secondLastStatus.LastEvent.ID == lastEvent.ID && secondLastStatus.LastEvent.Created.After(yesterday) {
+		log.Printf("Using previously established status for %s", lastEvent.EventVendorType)
 		return *secondLastStatus, nil
 	}
 
@@ -45,7 +47,10 @@ func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
 		status.Status = StatusOk
 	}
 
+	log.Printf("Status is now %s", status.Status)
+
 	if secondLastStatus == nil || secondLastStatus.Status != status.Status {
+		log.Println("Sending update on status")
 		for _, a := range e.GetAlerters() {
 			err := a.SendAlert(status)
 			if err != nil {
