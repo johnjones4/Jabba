@@ -1,6 +1,7 @@
 package status
 
 import (
+	"main/alerter"
 	"time"
 
 	"github.com/johnjones4/Jabba/core"
@@ -12,23 +13,17 @@ const (
 	StatusAbnormal   = "abnormal"
 )
 
-type Status struct {
-	EventVendorType string     `json:"eventVendorType"`
-	EventVendorName string     `json:"eventVendorName"`
-	Status          string     `json:"status"`
-	LastEvent       core.Event `json:"lastEvent"`
-}
-
 type StatusEngine interface {
 	Start()
-	GetStatusForVendorType(string) (*Status, error)
-	HandleNewEvent(event core.Event) (*Status, error)
-	ProcessEventsForVendorType(string) (*Status, error)
+	GetStatusForVendorType(string) (*core.Status, error)
+	HandleNewEvent(event core.Event) (*core.Status, error)
+	ProcessEventsForVendorType(string) (*core.Status, error)
 	GetVendorName(string) string
+	GetAlerters() []alerter.AlertSender
 }
 
-func GenerateStatus(e StatusEngine, lastEvent core.Event) (Status, error) {
-	status := Status{
+func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
+	status := core.Status{
 		LastEvent:       lastEvent,
 		EventVendorType: lastEvent.EventVendorType,
 		EventVendorName: e.GetVendorName(lastEvent.EventVendorType),

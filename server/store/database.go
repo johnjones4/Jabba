@@ -31,17 +31,11 @@ func (s *PGStore) SaveEvent(event *core.Event) error {
 		return err
 	}
 
-	alertsJson, err := json.Marshal(event.Alerts)
-	if err != nil {
-		return err
-	}
-
-	err = s.pool.QueryRow(context.Background(), "INSERT INTO events (event_vendor_type, event_vendor_id, created, vendor_info, alerts, is_normal) VALUES ($1,$2,$3,$4,$5,$6) RETURNING \"id\"",
+	err = s.pool.QueryRow(context.Background(), "INSERT INTO events (event_vendor_type, event_vendor_id, created, vendor_info, is_normal) VALUES ($1,$2,$3,$4,$5) RETURNING \"id\"",
 		event.EventVendorType,
 		event.EventVendorID,
 		event.Created,
 		vendorInfoJson,
-		alertsJson,
 		event.IsNormal,
 	).Scan(&event.ID)
 	if err != nil {
@@ -52,7 +46,7 @@ func (s *PGStore) SaveEvent(event *core.Event) error {
 }
 
 func (s *PGStore) GetEvents(limit int, offset int) ([]core.Event, error) {
-	rows, err := s.pool.Query(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, alerts, is_normal FROM events ORDER BY created DESC LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := s.pool.Query(context.Background(), "SELECT id, event_vendor_type, event_vendor_id, created, vendor_info, is_normal FROM events ORDER BY created DESC LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -116,14 +110,12 @@ func (s *PGStore) GetEventsForVendorType(t string, limit int, offset int) ([]cor
 func parseEvent(row Scannable) (core.Event, error) {
 	e := core.Event{}
 	var vendorInfoBytes []byte
-	var alertsBytes []byte
 	err := row.Scan(
 		&e.ID,
 		&e.EventVendorType,
 		&e.EventVendorID,
 		&e.Created,
 		&vendorInfoBytes,
-		&alertsBytes,
 		&e.IsNormal,
 	)
 	if err != nil {
@@ -131,11 +123,6 @@ func parseEvent(row Scannable) (core.Event, error) {
 	}
 
 	err = json.Unmarshal(vendorInfoBytes, &e.VendorInfo)
-	if err != nil {
-		return core.Event{}, err
-	}
-
-	err = json.Unmarshal(alertsBytes, &e.Alerts)
 	if err != nil {
 		return core.Event{}, err
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"main/alerter"
 	"main/status"
 	"main/store"
 	"net/http"
@@ -26,7 +27,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	se := status.NewMemoryStatusEngine(vendorInfo, s)
+	alerters, err := alerter.LoadEmailAlerters(os.Getenv("EMAIL_ALERTS_CONFIG"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	se := status.NewMemoryStatusEngine(vendorInfo, s, alerters)
 	go se.Start()
 
 	h := initAPIServer(s, se)

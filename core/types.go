@@ -15,6 +15,12 @@ type Event struct {
 	EventVendorID   string      `json:"eventVendorID"`
 	Created         time.Time   `json:"created"`
 	VendorInfo      interface{} `json:"vendorInfo"`
-	Alerts          []Alert     `json:"alerts"`
 	IsNormal        bool        `json:"isNormal"`
+}
+
+type Status struct {
+	EventVendorType string `json:"eventVendorType"`
+	EventVendorName string `json:"eventVendorName"`
+	Status          string `json:"status"`
+	LastEvent       Event  `json:"lastEvent"`
 }

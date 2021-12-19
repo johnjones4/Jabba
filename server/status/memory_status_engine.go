@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"main/alerter"
 	"main/store"
 	"time"
 
@@ -11,18 +12,20 @@ import (
 )
 
 type MemoryStatusEngine struct {
-	statuses    map[string]Status
+	statuses    map[string]core.Status
 	vendorNames map[string]string
 	eventsStore store.Store
+	alerters    []alerter.AlertSender
 }
 
 const OneWeekAgo = time.Hour * 24 * 7 * -1
 
-func NewMemoryStatusEngine(vendorNames map[string]string, eventsStore store.Store) *MemoryStatusEngine {
+func NewMemoryStatusEngine(vendorNames map[string]string, eventsStore store.Store, alerters []alerter.AlertSender) *MemoryStatusEngine {
 	return &MemoryStatusEngine{
-		statuses:    make(map[string]Status),
+		statuses:    make(map[string]core.Status),
 		vendorNames: vendorNames,
 		eventsStore: eventsStore,
+		alerters:    alerters,
 	}
 }
 
@@ -50,7 +53,7 @@ func (e *MemoryStatusEngine) Start() {
 	}
 }
 
-func (e *MemoryStatusEngine) ProcessEventsForVendorType(eventVendorType string) (*Status, error) {
+func (e *MemoryStatusEngine) ProcessEventsForVendorType(eventVendorType string) (*core.Status, error) {
 	events, err := e.eventsStore.GetEventsForVendorType(eventVendorType, 1, 0)
 	if err != nil {
 		return nil, err
@@ -63,14 +66,14 @@ func (e *MemoryStatusEngine) ProcessEventsForVendorType(eventVendorType string) 
 	return e.HandleNewEvent(events[0])
 }
 
-func (e *MemoryStatusEngine) GetStatusForVendorType(t string) (*Status, error) {
+func (e *MemoryStatusEngine) GetStatusForVendorType(t string) (*core.Status, error) {
 	if status, ok := e.statuses[t]; ok {
 		return &status, nil
 	}
 	return nil, fmt.Errorf("no status for %s", t)
 }
 
-func (e *MemoryStatusEngine) HandleNewEvent(lastEvent core.Event) (*Status, error) {
+func (e *MemoryStatusEngine) HandleNewEvent(lastEvent core.Event) (*core.Status, error) {
 	s, err := GenerateStatus(e, lastEvent)
 	if err != nil {
 		return nil, err
@@ -84,4 +87,8 @@ func (e *MemoryStatusEngine) GetVendorName(t string) string {
 		return name
 	}
 	return t
+}
+
+func (e *MemoryStatusEngine) GetAlerters() []alerter.AlertSender {
+	return e.alerters
 }
