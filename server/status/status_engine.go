@@ -37,7 +37,7 @@ func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
 
 	if !lastEvent.IsNormal || lastEvent.Created.Before(time.Now().UTC().Add(OneWeekAgo)) {
 		status.Status = StatusAbnormal
-	} else if secondLastStatus != nil && secondLastStatus.LastEvent.IsNormal && secondLastStatus.LastEvent.Created.After(time.Now().UTC().Add(-24*time.Hour)) {
+	} else if secondLastStatus != nil && lastEvent.IsNormal && !secondLastStatus.LastEvent.IsNormal && secondLastStatus.LastEvent.Created.After(time.Now().UTC().Add(-24*time.Hour)) {
 		status.Status = StatusRecovering
 	} else {
 		status.Status = StatusOk
