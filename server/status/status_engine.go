@@ -23,6 +23,8 @@ type StatusEngine interface {
 }
 
 func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
+	yesterday := time.Now().UTC().Add(-24 * time.Hour)
+
 	status := core.Status{
 		LastEvent:       lastEvent,
 		EventVendorType: lastEvent.EventVendorType,
@@ -31,13 +33,13 @@ func GenerateStatus(e StatusEngine, lastEvent core.Event) (core.Status, error) {
 
 	secondLastStatus, _ := e.GetStatusForVendorType(lastEvent.EventVendorType)
 
-	if secondLastStatus != nil && secondLastStatus.LastEvent.ID == lastEvent.ID {
+	if secondLastStatus != nil && secondLastStatus.LastEvent.ID == lastEvent.ID && secondLastStatus.LastEvent.Created.After(yesterday) {
 		return *secondLastStatus, nil
 	}
 
 	if !lastEvent.IsNormal || lastEvent.Created.Before(time.Now().UTC().Add(OneWeekAgo)) {
 		status.Status = StatusAbnormal
-	} else if secondLastStatus != nil && lastEvent.IsNormal && !secondLastStatus.LastEvent.IsNormal && secondLastStatus.LastEvent.Created.After(time.Now().UTC().Add(-24*time.Hour)) {
+	} else if secondLastStatus != nil && lastEvent.IsNormal && !secondLastStatus.LastEvent.IsNormal && secondLastStatus.LastEvent.Created.After(yesterday) {
 		status.Status = StatusRecovering
 	} else {
 		status.Status = StatusOk
