@@ -217,7 +217,7 @@ func (p *AbodePoller) emitEvents(u jabbacore.Upstream, events []abodeTimelineEve
 				"hasFaults":  e.HasFaults != "0",
 			},
 			Created:  time.Unix(int64(tstamp), 0),
-			IsNormal: true,
+			IsNormal: e.HasActions == "0" && e.HasFaults == "0" && e.Severity != "0",
 		}
 		err = u.LogEvent(&jEvent)
 		if err != nil {
