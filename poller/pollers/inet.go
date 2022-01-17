@@ -86,13 +86,14 @@ func (p *INetPoller) runALoop(u jabbacore.Upstream) error {
 		err  error
 	)
 	log.Println("Checking internet status ...")
-	attempts := 0
-	for attempts < 10 && ipv4 == "" && ipv6 == "" {
+	for attempts := 0; attempts < 10 && ipv4 == "" && ipv6 == ""; attempts++ {
 		ipv4, err = makeCall(ipV4Endpoint)
 		if err == nil {
 			ipv6, err = makeCall(ipV6Endpoint)
 		}
-		attempts++
+		if err != nil {
+			time.Sleep(time.Second * time.Duration(attempts+1))
+		}
 	}
 
 	if err != nil {
