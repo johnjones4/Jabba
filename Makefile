@@ -10,12 +10,12 @@ POLLER_DOCKERFILE=./poller/Dockerfile
 SERVER_SUB_TAG=${TAG}-server
 SERVER_DOCKERFILE=./server/Dockerfile
 
-.PHONY: loghandler poller server
+.PHONY: loghandler poller server ui
 
 info:
 	echo ${PROJECT}
 
-ci: loghandler poller server
+ci: loghandler poller server ui
 	
 loghandler:
 	docker build -t ${LOGHANDLER_TAG} -f ${LOGHANDLER_DOCKERFILE} .
@@ -31,3 +31,11 @@ server:
 	docker build -t ${SERVER_SUB_TAG} -f ${SERVER_DOCKERFILE} .
 	docker push ${SERVER_SUB_TAG}:latest
 	docker image rm ${SERVER_SUB_TAG}:latest
+
+ui:
+	cd ui && npm install
+	cd ui && npm run build
+	tar zcvf ui.tar.gz ./ui/build
+	git tag ${VERSION}
+	git push origin ${VERSION}
+	gh release create ${VERSION} ui.tar.gz --generate-notes
