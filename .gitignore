@@ -1,3 +1,4 @@
 jobs.json
 *.log
 .DS_Store
+ui.tar.gz
