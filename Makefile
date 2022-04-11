@@ -1,5 +1,6 @@
 PROJECT=$(shell basename $(shell pwd))
 TAG=ghcr.io/johnjones4/${PROJECT}
+VERSION=$(shell date +%s)
 
 LOGHANDLER_TAG=${TAG}-loghandler
 LOGHANDLER_DOCKERFILE=./loghandler/Dockerfile
